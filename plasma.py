@@ -15,7 +15,7 @@ class Plasma:
 
   width, height = 60, 40
   i             = 1
-  speed         = 1
+  speed         = 50
 
   formulas = [
     ["moire",    lambda x, y, i: (sin(tan(cos(x*y*(i/4)))))],

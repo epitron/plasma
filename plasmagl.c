@@ -1,74 +1,101 @@
 #include <GL/glut.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <math.h>
+
+typedef unsigned char byte;
 
 #define WIDTH 500
 #define HEIGHT 500
 
-unsigned char pixels[HEIGHT][WIDTH][3];
+int t = 0;
+byte pixels[HEIGHT][WIDTH][4];
 
 void put_pixel(int x, int y, int r, int g, int b) {
   pixels[y][x][0] = r;
   pixels[y][x][1] = g;
   pixels[y][x][2] = b;
+  pixels[y][x][3] = 127;
 }
 
 clampf(float n, float lower, float upper) {
-  if (n < lower) n = lower;
-  if (n > upper) n = upper;
-  return n;
+  float v = n;
+  if (v < lower) v = lower;
+  if (v > upper) v = upper;
+  return v;
 }
 
 clampi(int n, int lower, int upper) {
-  if (n < lower) n = lower;
-  if (n > upper) n = upper;
-  return n;
+  int v = n;
+  if (v < lower) v = lower;
+  if (v > upper) v = upper;
+  return v;
 }
 
-float f(x,y,i) {
-  return sin(tan(cos(x*y*(i/4.0))));
-}
-
-
-int c = 0;
 
 void clear_buffer() {
-  int x, y;
+  // // Long:
+  // int x, y;
+  // for (y = 0; y < HEIGHT; y++) {
+  //   for (x = 0; x < WIDTH; x++) {
+  //     pixels[y][x][0] = 0;
+  //     pixels[y][x][1] = 0;
+  //     pixels[y][x][2] = 0;
+  //   }
+  // }
 
-  for (y = 0; y < HEIGHT; y++) {
-    for (x = 0; x < WIDTH; x++) {
-      pixels[y][x][0] = 0;
-      pixels[y][x][1] = 0;
-      pixels[y][x][2] = 0;
-    }
-  }
+  // Short
+  memset(pixels, 0, sizeof(pixels));
 }
 
-void render() {
-  float i = c/1000.0;
+float f(int x, int y, int t) {
+  float v;
+
+  v = sin(
+        tan(
+          cos(
+            (float)x * (float)y * ((float)t/4.0)
+          )
+        )
+      );
+  
+  // printf("[%dx%d = %f] ", x,y,v);
+
+  return v;
+}
+
+
+void draw() {
+  float i = t/1000.0;
   int x,y;
-  unsigned char val = clampf(f(x,y,i), 0.0, 1.0) * 255;
+  float val;
 
   clear_buffer();
   
   for (y = 0; y < HEIGHT; y++) {
     for (x = 0; x < WIDTH; x++) {
-      put_pixel(x, y, val, val, val);
+      val = clampf( f(x,y,i), 0.0, 1.0 ) * 255.0;
+      // printf("%f\n", val);
+      put_pixel(x, y, (int)val, (int)val, (int)val);
     }
   }
+
+  t++;
 }
 
 
 void display() {
   glClear(GL_COLOR_BUFFER_BIT);
-  render();
-  glDrawPixels(WIDTH, HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+  
+  draw();
+  glDrawPixels(WIDTH, HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
   // glFlush();
   glutSwapBuffers();
   glutPostRedisplay();
 
-  c++;
+  // printf("%d\n", t);
 
   // for (k = 0; k < 50000; k++) {
   //   x = rand() % WIDTH;
@@ -112,13 +139,15 @@ void myinit(void) {
 
 
 void main(int argc, char **argv) {
+  printf("%f clamped: %f\n", 10.0, clampf(10.0, 2.0, 9.0));
+
   glutInit(&argc, argv);
   
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
   // glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
   glutInitWindowSize(WIDTH, HEIGHT);
   glutInitWindowPosition (0, 0);
-  glutCreateWindow("Snow");
+  glutCreateWindow("plasma");
 
   glutIdleFunc(idle);
   glutDisplayFunc(display);
