@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # coding=utf-8
 
 from math import *
@@ -6,6 +6,7 @@ from time import sleep
 import os
 import random
 import sys
+import shutil
 
 write = sys.stdout.write
 
@@ -13,9 +14,11 @@ write = sys.stdout.write
 
 class Plasma:
 
-  width, height = 60, 40
+  width, height = shutil.get_terminal_size((60, 40))
+  width        -= 3
+  height       -= 3
   i             = 1
-  speed         = 50
+  speed         = 5
 
   formulas = [
     ["moire",    lambda x, y, i: (sin(tan(cos(x*y*(i/4)))))],
@@ -106,11 +109,11 @@ def greyblock(val):
 
   return color(char, fore, back)
 
-def greydient():
+def print_all_greys():
   line = [greyblock(n/92.0) for n in range(0, 92)]
   print(''.join(line))
 
-def spectrum():
+def print_all_colors():
   print( ' '.join(color(n, n) for n in range(0, 255)) )
 
 def main():
@@ -126,8 +129,6 @@ if main():
 
   try:
     Plasma(num).run()
-    # greydient()
-    # spectrum()
   except KeyboardInterrupt:
     pass
 

@@ -19,12 +19,12 @@ def dim(val):
 def render(i):
   i = i/1000.0
   for y in range(0,height):
-    line = ""
+    line = [None]*width
     for x in range(0,width):
-      # line += dim(sin(tan(cos(x*y*(i/4)))))
-      line += dim(((sin(y*(i/(cos(x))))*tan(x*i))*(i/(x+1)))*(i*(y+1)))
-      # line += dim(sin( sin(x*i) * cos(y*i) ))
-    print line
+      line[x] = dim(sin(tan(cos(x*y*(i/4)))))
+      # line[x] = dim(((sin(y*(i/(cos(x))))*tan(x*i))*(i/(x+1)))*(i*(y+1)))
+      # line[x] = dim(sin( sin(x*i) * cos(y*i) ))
+    print "".join(line)
 
 i = 1
 clear()
